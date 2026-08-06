@@ -1,0 +1,35 @@
+body{
+
+    margin:0;
+
+    background:#87ceeb;
+
+    font-family:Arial;
+
+    text-align:center;
+
+}
+
+h1{
+
+    margin:10px;
+
+    color:#3b2f2f;
+
+}
+
+canvas{
+
+    border:5px solid black;
+
+    background:#8ed16f;
+
+}
+
+#hud{
+
+    margin-top:10px;
+
+    font-size:28px;
+
+}

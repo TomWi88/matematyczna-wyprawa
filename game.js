@@ -37,6 +37,15 @@ let score = 0;
 
 let lives = 3;
 
+// ======================================================
+// ===== STOPER CAŁEJ GRY =====
+// ======================================================
+
+let gameStartTime = 0;
+
+let gameEndTime = 0;
+
+let gameTimerRunning = false;
 
 // ======================================================
 // ZWOJE
@@ -65,6 +74,26 @@ const artifact = {
 
 };
 
+// ======================================================
+// KOTEK - BONUSOWE ŻYCIE
+// ======================================================
+
+let cat = {
+    active: false,
+    x: 0,
+    y: 0,
+    width: 45,
+    height: 45,
+    timer: 0
+};
+
+// 10 sekund widoczności
+const CAT_DISPLAY_TIME = 60 * 10;
+
+// czas do kolejnego pojawienia się
+const CAT_SPAWN_TIME = 60 * 35;
+
+let catSpawnTimer = CAT_SPAWN_TIME;
 
 // ======================================================
 // PLATFORMS
@@ -94,7 +123,7 @@ const player = {
 
     onGround: false,
 
-    emoji: "🧑"
+    emoji: "🤠"
 
 };
 
@@ -342,6 +371,8 @@ function handleMenuInput(e){
         if(menuOption === 0){
 
             restartGame();
+
+            startGameTimer();
 
             gameState = "game";
 
@@ -812,6 +843,11 @@ function loadLevel(level){
 
     invulnerableTimer = 0;
 
+    cat.active = false;
+
+    cat.timer = 0;
+
+    catSpawnTimer = CAT_SPAWN_TIME;
 
     if(level === 1){
 
@@ -1395,6 +1431,130 @@ function drawWater(){
 
 }
 
+// RYSOWANIE KOTKA
+
+function drawCat(){
+
+    if(!cat.active){
+        return;
+    }
+
+    ctx.save();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.font = "45px serif";
+
+
+    // lekki ruch góra-dół
+    const bounce =
+        Math.sin(animationTime * 4) * 3;
+
+
+    ctx.fillText(
+        "🐱",
+        cat.x + cat.width / 2,
+        cat.y + cat.height / 2 + bounce
+    );
+
+
+    // delikatne oznaczenie bonusu
+    ctx.font = "18px Arial";
+
+    ctx.fillStyle = "white";
+
+    ctx.fillText(
+        "+1 ❤️",
+        cat.x + cat.width / 2,
+        cat.y - 10
+    );
+
+
+    ctx.restore();
+
+}
+
+// ======================================================
+// FUNKCJA STOPER
+// ======================================================
+
+function startGameTimer(){
+
+    gameStartTime = performance.now();
+
+    gameEndTime = 0;
+
+    gameTimerRunning = true;
+
+}
+
+function stopGameTimer(){
+
+    if(!gameTimerRunning){
+        return;
+    }
+
+    gameEndTime = performance.now();
+
+    gameTimerRunning = false;
+
+}
+
+function getGameTime(){
+
+    if(gameTimerRunning){
+
+        return (
+            performance.now() -
+            gameStartTime
+        ) / 1000;
+
+    }
+
+    return (
+        gameEndTime -
+        gameStartTime
+    ) / 1000;
+
+}
+
+function formatGameTime(seconds){
+
+    seconds = Math.floor(seconds);
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    const remainingSeconds =
+        seconds % 60;
+
+    return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(remainingSeconds).padStart(2, "0")
+    );
+
+}
+
+function updateGameTimer(){
+
+    const timer =
+        document.getElementById("game-time");
+
+    if(!timer){
+        return;
+    }
+
+    timer.textContent =
+        formatGameTime(
+            getGameTime()
+        );
+
+}
+
+
+
 // ======================================================
 // KOLIZJA
 // ======================================================
@@ -1534,6 +1694,115 @@ function checkPlatforms(){
 
 }
 
+// FUNKCJA TOWARZACA KOTKA
+
+function spawnCat(){
+
+    if(cat.active){
+        return;
+    }
+
+    cat.active = true;
+
+    cat.timer = CAT_DISPLAY_TIME;
+
+    // losowa pozycja na planszy
+    cat.x = random(50, WIDTH - 100);
+
+    cat.y = 100;
+
+    // Szukamy platformy pod kotkiem
+    for(let p of platforms){
+
+        if(
+            cat.x + cat.width > p.x &&
+            cat.x < p.x + p.width
+        ){
+
+            cat.y = p.y - cat.height;
+
+            break;
+        }
+    }
+}
+
+function updateCat(){
+
+    // Nie pokazujemy kotka poza grą
+    if(gameState !== "game"){
+        return;
+    }
+
+    // Jeśli kotek już jest na planszy
+    if(cat.active){
+
+        cat.timer--;
+
+        if(cat.timer <= 0){
+
+            cat.active = false;
+
+            catSpawnTimer = CAT_SPAWN_TIME;
+
+        }
+
+        checkCatCollision();
+
+        return;
+    }
+
+
+    // Odliczanie do kolejnego kotka
+    catSpawnTimer--;
+
+    if(catSpawnTimer <= 0){
+
+        spawnCat();
+
+    }
+
+}
+
+function checkCatCollision(){
+
+    if(!cat.active){
+        return;
+    }
+
+    const catBox = {
+
+        x: cat.x,
+
+        y: cat.y,
+
+        width: cat.width,
+
+        height: cat.height
+
+    };
+
+
+    if(intersects(player, catBox)){
+
+        // dodatkowe życie
+        lives++;
+
+        updateHUD();
+
+
+        // kotek znika
+        cat.active = false;
+
+        catSpawnTimer = CAT_SPAWN_TIME;
+
+
+        showMessage(
+            "🐱 Kotek! +1 ❤️"
+        );
+
+    }
+
+}
 
 // ======================================================
 // ZBIERANIE ZWOJÓW
@@ -1712,24 +1981,28 @@ function openQuestion(){
 
                 break;
 
-
             // --------------------------------------
             // KLASA 5
             // --------------------------------------
 
-            case 5:
+                case 5:
 
-                a = random(50, 200);
+                a = random(20,120);
+                b = random(10,80);
 
-                b = random(10, 80);
+                if(b > a){
+
+                let temp = a;
+                a = b;
+                b = temp;
+
+                }
 
                 currentAnswer = a - b;
 
-                currentQuestion =
-                    `${a} - ${b} = ?`;
+                currentQuestion = `${a} - ${b} = ?`;
 
                 break;
-
 
             // --------------------------------------
             // KLASA 6
@@ -1748,7 +2021,6 @@ function openQuestion(){
 
                 break;
 
-
             // --------------------------------------
             // KLASA 7
             // --------------------------------------
@@ -1765,7 +2037,6 @@ function openQuestion(){
                     `${a} ÷ ${b} = ?`;
 
                 break;
-
 
             // --------------------------------------
             // KLASA 8
@@ -1785,7 +2056,6 @@ function openQuestion(){
         }
 
     }
-
 
     // ==============================================
     // ARTEFAKT
@@ -1942,6 +2212,8 @@ function checkAnswer(){
 
             if(levelNumber === 4){
 
+                stopGameTimer();
+
                 gameState = "win";
 
                 return;
@@ -2063,7 +2335,7 @@ function updateHUD(){
     if(levelElement){
 
         levelElement.textContent =
-            "🌴 Poziom: " + levelNumber;
+            levelNumber;
 
     }
 
@@ -2121,7 +2393,7 @@ function updateRocks(){
         obstacleTimer =
             levelNumber === 2
                 ? random(45, 80)
-                : random(30, 55);
+                : random(15, 25);
     }
 
     for(let rock of fallingRocks){
@@ -2284,7 +2556,7 @@ function updateWater(){
 
     // Woda rośnie cały czas, szybciej po kazdym zadaniu
 
-    let waterSpeed = 0.025 + scrollsCollected * 0.005;
+    let waterSpeed = 0.025 + scrollsCollected * 0.015;
 
     waterLevel -= waterSpeed;
 
@@ -2341,7 +2613,7 @@ function checkWaterCollision(){
 
 function drawWinScreen(){
 
-    ctx.fillStyle = "#1b4332";
+    ctx.fillStyle = "#00633a";
 
     ctx.fillRect(
         0,
@@ -2353,7 +2625,7 @@ function drawWinScreen(){
 
     ctx.textAlign = "center";
 
-    ctx.fillStyle = "#ffd60a";
+    ctx.fillStyle = "#b69c1a";
 
     ctx.font = "52px Arial";
 
@@ -2363,17 +2635,7 @@ function drawWinScreen(){
         150
     );
 
-
-    ctx.font = "34px serif";
-
-    ctx.fillText(
-        "🏺",
-        WIDTH / 2,
-        240
-    );
-
-
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "#b69c1a";
 
     ctx.font = "28px Arial";
 
@@ -2390,13 +2652,25 @@ function drawWinScreen(){
         370
     );
 
+    ctx.fillStyle = "#b69c1a";
+
+    ctx.font = "30px Arial";
+
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+    "⏱️ Czas całej wyprawy: " +
+    formatGameTime(getGameTime()),
+    WIDTH / 2,
+    420
+    );
 
     ctx.font = "20px Arial";
 
     ctx.fillText(
-        "Naciśnij ENTER, aby rozpocząć ponownie",
+        "Odśwież stronę, aby rozpocząć nową grę.",
         WIDTH / 2,
-        450
+        500
     );
 
 }
@@ -2624,6 +2898,8 @@ function drawGame(){
 
     drawRocks();
 
+    drawCat();
+
     drawPlayer();
 
     drawWater();
@@ -2721,6 +2997,10 @@ function gameLoop(){
     updateRocks();
 
     updateWater();
+
+    updateCat();
+
+    updateGameTimer();
 
     drawGame();
 

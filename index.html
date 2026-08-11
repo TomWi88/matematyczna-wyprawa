@@ -10,8 +10,6 @@
 
 <body>
 
-<h1>Matematyczna Wyprawa</h1>
-
 <div id="game-container">
 
 <div id="hud">
@@ -37,6 +35,110 @@
     <canvas id="game" width="1000" height="600"></canvas>
 
 </div>
+
+<!-- =========================================
+     STEROWANIE DOTYKOWE
+========================================= -->
+
+<div id="touch-controls">
+
+    <div class="touch-left">
+
+        <button
+            id="touch-left"
+            class="touch-button">
+            ◀
+        </button>
+
+    </div>
+
+
+    <div class="touch-center">
+
+        <button
+            id="touch-jump"
+            class="touch-button jump-button">
+            ⬆
+        </button>
+
+    </div>
+
+
+    <div class="touch-right">
+
+        <button
+            id="touch-right"
+            class="touch-button">
+            ▶
+        </button>
+
+    </div>
+
+</div>
+
+<!-- =========================================
+     DOTYKOWE MENU
+========================================= -->
+
+<div id="touch-menu">
+
+    <button id="menu-new-game">
+        🎮 NOWA GRA
+    </button>
+
+    <button id="menu-grade">
+        🎓 WYBÓR KLASY
+    </button>
+
+    <div id="grade-controls">
+
+        <button id="grade-down">
+            ◀
+        </button>
+
+        <span id="touch-grade">
+            Klasa: 4
+        </span>
+
+        <button id="grade-up">
+            ▶
+        </button>
+
+    </div>
+
+    <button id="menu-instructions">
+        📖 INSTRUKCJA
+    </button>
+
+</div>
+
+<!-- =========================================
+     KLAWIATURA MATEMATYCZNA
+========================================= -->
+
+<div id="math-keypad">
+
+    <button data-key="1">1</button>
+    <button data-key="2">2</button>
+    <button data-key="3">3</button>
+
+    <button data-key="4">4</button>
+    <button data-key="5">5</button>
+    <button data-key="6">6</button>
+
+    <button data-key="7">7</button>
+    <button data-key="8">8</button>
+    <button data-key="9">9</button>
+
+    <button data-key="backspace">⌫</button>
+    <button data-key="0">0</button>
+    <button data-key="enter">✓</button>
+
+</div>
+
+<footer id="author-footer">
+    Gra stworzona przez Tomasza Wieliczko dla uczniów i nauczycieli matematyki w Szkołach Podstawowych.
+</footer>
 
 <script src="game.js"></script>
 

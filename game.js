@@ -24,6 +24,7 @@ let gameState = "menu";
 let previousGameState = "menu";
 let selectedGrade = 4;
 let menuOption = 0;
+let usedQuestions = [];
 
 const menuItems = [
     "NOWA GRA",
@@ -275,7 +276,6 @@ document.addEventListener("keydown", function(e){
 
     }
 
-
     // ==============================================
     // SKOK
     // ==============================================
@@ -370,13 +370,15 @@ function handleMenuInput(e){
 
         if(menuOption === 0){
 
+            usedQuestions = [];
+
             restartGame();
 
             startGameTimer();
 
-            gameState = "game";
-
             loadLevel(1);
+
+            gameState = "game";
 
         }
 
@@ -1301,7 +1303,11 @@ function drawQuestionWindow(){
     );
 
 
-    ctx.fillStyle = "#ffd60a";
+    ctx.fillStyle = "yellow";
+
+    ctx.textAlign = "center";
+
+    ctx.font = "36px Arial";
 
     ctx.fillText(
         playerAnswer || "_",
@@ -1945,7 +1951,6 @@ function random(min, max){
 
 }
 
-
 // ======================================================
 // GENEROWANIE PYTANIA
 // ======================================================
@@ -1955,197 +1960,279 @@ function openQuestion(){
     let a;
     let b;
 
+    let question;
+    let answer;
 
-    // ==============================================
-    // ZWÓJ
-    // ==============================================
+    let attempts = 0;
 
-    if(questionReward === "scroll"){
 
-        switch(selectedGrade){
+    // ==================================================
+    // SZUKANIE UNIKALNEGO PYTANIA
+    // ==================================================
 
-            // --------------------------------------
-            // KLASA 4
-            // --------------------------------------
+    do {
 
-            case 4:
+        // ==============================================
+        // ZWÓJ
+        // ==============================================
 
-                a = random(10, 99);
+        if(questionReward === "scroll"){
 
-                b = random(10, 99);
+            switch(selectedGrade){
 
-                currentAnswer = a + b;
+                // --------------------------------------
+                // KLASA 4
+                // --------------------------------------
 
-                currentQuestion =
-                    `${a} + ${b} = ?`;
+                case 4:
 
-                break;
+                    a = random(10, 99);
+                    b = random(10, 99);
 
-            // --------------------------------------
-            // KLASA 5
-            // --------------------------------------
+                    answer = a + b;
+
+                    question =
+                        `${a} + ${b} = ?`;
+
+                    break;
+
+
+                // --------------------------------------
+                // KLASA 5
+                // --------------------------------------
 
                 case 5:
 
-                a = random(20,120);
-                b = random(10,80);
+                    a = random(20, 120);
+                    b = random(10, 80);
 
-                if(b > a){
+                    // zabezpieczenie przed liczbą ujemną
 
-                let temp = a;
-                a = b;
-                b = temp;
+                    if(b > a){
 
-                }
+                        let temp = a;
 
-                currentAnswer = a - b;
+                        a = b;
 
-                currentQuestion = `${a} - ${b} = ?`;
+                        b = temp;
 
-                break;
+                    }
 
-            // --------------------------------------
-            // KLASA 6
-            // --------------------------------------
+                    answer = a - b;
 
-            case 6:
+                    question =
+                        `${a} - ${b} = ?`;
 
-                a = random(2, 12);
+                    break;
 
-                b = random(2, 12);
 
-                currentAnswer = a * b;
+                // --------------------------------------
+                // KLASA 6
+                // --------------------------------------
 
-                currentQuestion =
-                    `${a} × ${b} = ?`;
+                case 6:
 
-                break;
+                    a = random(2, 12);
+                    b = random(2, 12);
 
-            // --------------------------------------
-            // KLASA 7
-            // --------------------------------------
+                    answer = a * b;
 
-            case 7:
+                    question =
+                        `${a} × ${b} = ?`;
 
-                b = random(2, 10);
+                    break;
 
-                currentAnswer = random(2, 12);
 
-                a = b * currentAnswer;
+                // --------------------------------------
+                // KLASA 7
+                // --------------------------------------
 
-                currentQuestion =
-                    `${a} ÷ ${b} = ?`;
+                case 7:
 
-                break;
+                    b = random(2, 10);
 
-            // --------------------------------------
-            // KLASA 8
-            // --------------------------------------
+                    answer = random(2, 12);
 
-            case 8:
+                    a = b * answer;
 
-                a = random(2, 15);
+                    question =
+                        `${a} ÷ ${b} = ?`;
 
-                currentAnswer = a * a;
+                    break;
 
-                currentQuestion =
-                    `${a}² = ?`;
 
-                break;
+                // --------------------------------------
+                // KLASA 8
+                // --------------------------------------
+
+                case 8:
+
+                    a = random(2, 15);
+
+                    answer = a * a;
+
+                    question =
+                        `${a}² = ?`;
+
+                    break;
+
+            }
 
         }
 
-    }
 
-    // ==============================================
-    // ARTEFAKT
-    // ==============================================
+        // ==================================================
+        // ARTEFAKT
+        // ==================================================
 
-    else{
+        else{
 
-        switch(selectedGrade){
+            switch(selectedGrade){
 
-            case 4:
+                // --------------------------------------
+                // KLASA 4
+                // --------------------------------------
 
-                a = random(100, 300);
+                case 4:
 
-                b = random(100, 300);
+                    a = random(100, 300);
 
-                currentAnswer = a + b;
+                    b = random(100, 300);
 
-                currentQuestion =
-                    `${a} + ${b} = ?`;
+                    answer = a + b;
 
-                break;
+                    question =
+                        `${a} + ${b} = ?`;
 
-
-            case 5:
-
-                a = random(300, 700);
-
-                b = random(100, 250);
-
-                currentAnswer = a - b;
-
-                currentQuestion =
-                    `${a} - ${b} = ?`;
-
-                break;
+                    break;
 
 
-            case 6:
+                // --------------------------------------
+                // KLASA 5
+                // --------------------------------------
 
-                a = random(10, 25);
+                case 5:
 
-                b = random(3, 12);
+                    a = random(300, 700);
 
-                currentAnswer = a * b;
+                    b = random(100, 250);
 
-                currentQuestion =
-                    `${a} × ${b} = ?`;
+                    // zabezpieczenie przed wynikiem ujemnym
 
-                break;
+                    if(b > a){
+
+                        let temp = a;
+
+                        a = b;
+
+                        b = temp;
+
+                    }
+
+                    answer = a - b;
+
+                    question =
+                        `${a} - ${b} = ?`;
+
+                    break;
 
 
-            case 7:
+                // --------------------------------------
+                // KLASA 6
+                // --------------------------------------
 
-                b = random(3, 12);
+                case 6:
 
-                currentAnswer = random(10, 30);
+                    a = random(10, 25);
 
-                a = b * currentAnswer;
+                    b = random(3, 12);
 
-                currentQuestion =
-                    `${a} ÷ ${b} = ?`;
+                    answer = a * b;
 
-                break;
+                    question =
+                        `${a} × ${b} = ?`;
+
+                    break;
 
 
-            case 8:
+                // --------------------------------------
+                // KLASA 7
+                // --------------------------------------
 
-                a = random(10, 30);
+                case 7:
 
-                b = random(2, 10);
+                    b = random(3, 12);
 
-                currentAnswer =
-                    a * a - b;
+                    answer = random(10, 30);
 
-                currentQuestion =
-                    `${a}² - ${b} = ?`;
+                    a = b * answer;
 
-                break;
+                    question =
+                        `${a} ÷ ${b} = ?`;
+
+                    break;
+
+
+                // --------------------------------------
+                // KLASA 8
+                // --------------------------------------
+
+                case 8:
+
+                    a = random(10, 30);
+
+                    b = random(2, 10);
+
+                    answer =
+                        a * a - b;
+
+                    question =
+                        `${a}² - ${b} = ?`;
+
+                    break;
+
+            }
 
         }
 
-    }
 
+        attempts++;
+
+
+        // ----------------------------------------------
+        // Zabezpieczenie przed nieskończoną pętlą
+        // ----------------------------------------------
+
+        if(attempts >= 100){
+
+            break;
+
+        }
+
+
+    } while(usedQuestions.includes(question));
+
+
+    // ==================================================
+    // ZAPISZ PYTANIE JAKO WYKORZYSTANE
+    // ==================================================
+
+    usedQuestions.push(question);
+
+
+    // ==================================================
+    // PRZEKAZANIE PYTANIA DO GRY
+    // ==================================================
+
+    currentQuestion = question;
+
+    currentAnswer = answer;
 
     playerAnswer = "";
 
     questionActive = true;
 
 }
-
 
 // ======================================================
 // SPRAWDZANIE ODPOWIEDZI
@@ -2726,13 +2813,427 @@ function drawGameOverScreen(){
     ctx.font = "20px Arial";
 
     ctx.fillText(
-        "Naciśnij ENTER, aby spróbować ponownie",
+        "Odśwież stronę, aby spróbować ponownie",
         WIDTH / 2,
         430
     );
 
 }
 
+// ======================================================
+// DOTYKOWE STEROWANIE POSTACIĄ
+// ======================================================
+
+function setupTouchControls(){
+
+    const leftButton =
+        document.getElementById("touch-left");
+
+    const rightButton =
+        document.getElementById("touch-right");
+
+    const jumpButton =
+        document.getElementById("touch-jump");
+
+
+    // --------------------------------------
+    // LEWO
+    // --------------------------------------
+
+    leftButton.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "game"){
+                return;
+            }
+
+            keys["ArrowLeft"] = true;
+
+        }
+    );
+
+
+    leftButton.addEventListener(
+        "pointerup",
+        function(e){
+
+            e.preventDefault();
+
+            keys["ArrowLeft"] = false;
+
+        }
+    );
+
+
+    leftButton.addEventListener(
+        "pointercancel",
+        function(){
+
+            keys["ArrowLeft"] = false;
+
+        }
+    );
+
+
+    leftButton.addEventListener(
+        "pointerleave",
+        function(){
+
+            keys["ArrowLeft"] = false;
+
+        }
+    );
+
+
+    // --------------------------------------
+    // PRAWO
+    // --------------------------------------
+
+    rightButton.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "game"){
+                return;
+            }
+
+            keys["ArrowRight"] = true;
+
+        }
+    );
+
+
+    rightButton.addEventListener(
+        "pointerup",
+        function(e){
+
+            e.preventDefault();
+
+            keys["ArrowRight"] = false;
+
+        }
+    );
+
+
+    rightButton.addEventListener(
+        "pointercancel",
+        function(){
+
+            keys["ArrowRight"] = false;
+
+        }
+    );
+
+
+    rightButton.addEventListener(
+        "pointerleave",
+        function(){
+
+            keys["ArrowRight"] = false;
+
+        }
+    );
+
+
+    // --------------------------------------
+    // SKOK
+    // --------------------------------------
+
+    jumpButton.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "game"){
+                return;
+            }
+
+            if(questionActive){
+                return;
+            }
+
+            if(player.onGround){
+
+                player.vy = player.jump;
+
+                player.onGround = false;
+
+            }
+
+        }
+    );
+
+}
+
+// ======================================================
+// WIRTUALNA KLAWIATURA MATEMATYCZNA
+// ======================================================
+
+function setupMathKeypad(){
+    const keypad = document.getElementById("math-keypad");
+    if(!keypad){
+        return;
+    }
+
+    const buttons = keypad.querySelectorAll("button");
+
+    buttons.forEach(function(button){
+        button.addEventListener("click", function(e){
+            if(!questionActive){
+                return;
+            }
+
+            const key = button.getAttribute("data-key");
+
+            if(key !== null && key.length === 1 && key >= "0" && key <= "9"){
+                playerAnswer += key;
+            } else if(key === "backspace"){
+                playerAnswer = playerAnswer.slice(0, -1);
+            } else if(key === "enter"){
+                checkAnswer();
+            }
+        });
+    });
+}
+
+function updateMathKeypad(){
+    const keypad = document.getElementById("math-keypad");
+    if(!keypad){
+        return;
+    }
+
+    // Dodajemy klasę active gdy pytanie jest aktywne
+    if(questionActive && gameState === "game"){
+        keypad.classList.add("active");
+    } else {
+        keypad.classList.remove("active");
+    }
+}
+
+// ======================================================
+// DOTYKOWE MENU
+// ======================================================
+
+function setupTouchMenu(){
+
+    const newGameButton =
+        document.getElementById("menu-new-game");
+
+    const gradeButton =
+        document.getElementById("menu-grade");
+
+    const instructionsButton =
+        document.getElementById("menu-instructions");
+
+    const gradeDown =
+        document.getElementById("grade-down");
+
+    const gradeUp =
+        document.getElementById("grade-up");
+
+    const gradeText =
+        document.getElementById("touch-grade");
+
+
+    // ==============================================
+    // AKTUALIZACJA KLASY
+    // ==============================================
+
+    function updateTouchGrade(){
+
+        gradeText.textContent =
+            "Klasa: " + selectedGrade;
+
+    }
+
+
+    // ==============================================
+    // NOWA GRA
+    // ==============================================
+
+    newGameButton.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "menu"){
+                return;
+            }
+
+
+            // Reset gry
+
+            score = 0;
+
+            lives = 3;
+
+            levelNumber = 1;
+
+            usedQuestions = [];
+
+
+            // Reset stopera
+
+            startGameTimer();
+
+
+            // Załaduj pierwszy poziom
+
+            loadLevel(1);
+
+
+            // Uruchom grę
+
+            gameState = "game";
+
+
+            updateHUD();
+
+        }
+    );
+
+
+    // ==============================================
+    // WYBÓR KLASY
+    // ==============================================
+
+    gradeButton.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "menu"){
+                return;
+            }
+
+            menuOption = 1;
+
+            updateTouchGrade();
+
+        }
+    );
+
+
+    // ==============================================
+    // KLASA W DÓŁ
+    // ==============================================
+
+    gradeDown.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "menu"){
+                return;
+            }
+
+            selectedGrade--;
+
+            if(selectedGrade < 4){
+
+                selectedGrade = 8;
+
+            }
+
+            updateTouchGrade();
+
+        }
+    );
+
+
+    // ==============================================
+    // KLASA W GÓRĘ
+    // ==============================================
+
+    gradeUp.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "menu"){
+                return;
+            }
+
+            selectedGrade++;
+
+            if(selectedGrade > 8){
+
+                selectedGrade = 4;
+
+            }
+
+            updateTouchGrade();
+
+        }
+    );
+
+
+    // ==============================================
+    // INSTRUKCJA
+    // ==============================================
+
+    instructionsButton.addEventListener(
+        "pointerdown",
+        function(e){
+
+            e.preventDefault();
+
+            if(gameState !== "menu"){
+                return;
+            }
+
+
+            alert(
+`🏺 MATEMATYCZNA WYPRAWA
+
+🎮 CEL GRY
+
+Zbierz wszystkie 5 zwojów wiedzy,
+a następnie zdobądź artefakt.
+
+📜 Każdy zwój zawiera
+zadanie matematyczne.
+
+🏺 Artefakt również wymaga
+rozwiązania zadania.
+
+❤️ Jeśli odpowiesz źle,
+tracisz jedno życie.
+
+🐱 Kotek daje +1 życie.
+
+🪨 Na poziomach 2 i 3
+uważaj na spadające kamienie.
+
+🌊 Na poziomie 4
+uważaj na podnoszący się poziom wody.
+
+🎮 STEROWANIE
+
+◀  Ruch w lewo
+▶  Ruch w prawo
+⬆  Skok
+
+Powodzenia, poszukiwaczu!`
+            );
+
+        }
+    );
+
+
+    updateTouchGrade();
+
+}
 
 // ======================================================
 // RYSOWANIE GRY
@@ -2860,7 +3361,7 @@ function drawInstructions(){
     );
 
     ctx.fillText(
-        "Musisz zebrać wszystkie 6 zwojów, aby zdobyć artefakt.",
+        "Musisz zebrać wszystkie 5 zwojów, aby zdobyć artefakt.",
         WIDTH / 2,
         490
     );
@@ -3002,6 +3503,8 @@ function gameLoop(){
 
     updateGameTimer();
 
+    updateMathKeypad();
+
     drawGame();
 
 
@@ -3015,5 +3518,11 @@ function gameLoop(){
 // ======================================================
 
 updateHUD();
+
+setupTouchControls();
+
+setupTouchMenu();
+
+setupMathKeypad();
 
 gameLoop();

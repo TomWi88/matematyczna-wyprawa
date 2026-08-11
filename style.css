@@ -71,3 +71,400 @@ body {
     }
 
 }
+
+/* =========================================
+   STEROWANIE DOTYKOWE
+========================================= */
+
+#touch-controls {
+
+    display: none;
+
+    width: 100%;
+
+    max-width: 900px;
+
+    margin: 10px auto 0;
+
+    padding: 5px 15px;
+
+    box-sizing: border-box;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    user-select: none;
+
+    -webkit-user-select: none;
+
+    touch-action: none;
+}
+
+
+.touch-button {
+
+    width: 75px;
+
+    height: 65px;
+
+    border: 3px solid #3d2b1f;
+
+    border-radius: 18px;
+
+    background: rgba(233,196,106,0.9);
+
+    font-size: 32px;
+
+    font-weight: bold;
+
+    color: #3d2b1f;
+
+    box-shadow:
+        0 4px 0 #8b6b32;
+
+    touch-action: none;
+
+    user-select: none;
+
+    -webkit-user-select: none;
+
+}
+
+
+.touch-button:active {
+
+    transform: translateY(3px);
+
+    box-shadow:
+        0 1px 0 #8b6b32;
+
+    background: #f4a261;
+
+}
+
+
+.jump-button {
+
+    width: 85px;
+
+    height: 70px;
+
+}
+
+
+/* =========================================
+   TELEFONY I TABLETY
+========================================= */
+
+@media (pointer: coarse) {
+
+    #touch-controls {
+
+        display: flex;
+
+    }
+
+}
+
+
+/* =========================================
+   MAŁE TELEFONY
+========================================= */
+
+@media (max-width: 600px) {
+
+    #touch-controls {
+
+        padding-left: 8px;
+
+        padding-right: 8px;
+
+    }
+
+
+    .touch-button {
+
+        width: 65px;
+
+        height: 58px;
+
+        font-size: 27px;
+
+    }
+
+
+    .jump-button {
+
+        width: 75px;
+
+        height: 62px;
+
+    }
+
+}
+
+/* =========================================
+   KLAWIATURA MATEMATYCZNA
+========================================= */
+
+#math-keypad {
+    display: none; /* Domyślnie ukryta */
+    width: 280px;
+    margin: 15px auto;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    position: relative;
+    z-index: 9999; /* Pojawia się na samej górze */
+}
+
+/* Klawiatura widoczna tylko gdy jest aktywna */
+#math-keypad.active {
+    display: grid !important;
+}
+
+#math-keypad button {
+    height: 55px;
+    border: 2px solid #3d2b1f;
+    border-radius: 12px;
+    background: #f4e1a1;
+    font-size: 25px;
+    font-weight: bold;
+    color: #3d2b1f;
+    cursor: pointer;
+    user-select: none;
+}
+
+#math-keypad button:hover {
+    background: #e9c46a;
+}
+
+#math-keypad button:active {
+    transform: scale(0.92);
+    background: #f4a261;
+}
+
+
+/* =========================================
+   DOTYKOWE MENU
+========================================= */
+
+#touch-menu {
+
+    display: none;
+
+    width: 100%;
+
+    max-width: 420px;
+
+    margin: 15px auto;
+
+    padding: 10px;
+
+    box-sizing: border-box;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 12px;
+
+    touch-action: manipulation;
+
+}
+
+
+/* Główne przyciski */
+
+#touch-menu > button {
+
+    width: 90%;
+
+    min-height: 58px;
+
+    border: 3px solid #3d2b1f;
+
+    border-radius: 15px;
+
+    background: #e9c46a;
+
+    color: #3d2b1f;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 4px 0 #8b6b32;
+
+}
+
+
+#touch-menu > button:active {
+
+    transform: translateY(3px);
+
+    box-shadow:
+        0 1px 0 #8b6b32;
+
+}
+
+
+/* Wybór klasy */
+
+#grade-controls {
+
+    display: flex;
+
+    width: 90%;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+}
+
+
+#grade-controls button {
+
+    width: 65px;
+
+    height: 55px;
+
+    border: 3px solid #3d2b1f;
+
+    border-radius: 15px;
+
+    background: #f4e1a1;
+
+    font-size: 25px;
+
+    font-weight: bold;
+
+}
+
+
+#touch-grade {
+
+    flex: 1;
+
+    text-align: center;
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    color: white;
+
+}
+
+
+/* =========================================
+   TELEFON / TABLET
+========================================= */
+
+@media (pointer: coarse) {
+
+    #touch-menu {
+
+        display: flex;
+
+    }
+
+}
+
+
+/* =========================================
+   MAŁE TELEFONY
+========================================= */
+
+@media (max-width: 600px) {
+
+    #touch-menu > button {
+
+        font-size: 18px;
+
+        min-height: 52px;
+
+    }
+
+    #touch-grade {
+
+        font-size: 19px;
+
+    }
+
+}
+
+/* KURSOR */
+
+#math-keypad button {
+
+    cursor: pointer;
+
+    transition:
+        transform 0.08s,
+        background 0.08s;
+
+}
+
+
+#math-keypad button:hover {
+
+    background: #e9c46a;
+
+}
+
+
+#math-keypad button:active {
+
+    transform: scale(0.92);
+
+}
+
+#math-keypad button {
+
+    cursor: pointer;
+
+    transition:
+        transform 0.08s ease,
+        background 0.08s ease;
+
+}
+
+
+#math-keypad button:hover {
+
+    background: #e9c46a;
+
+}
+
+
+#math-keypad button:active {
+
+    transform: scale(0.90);
+
+    background: #f4a261;
+
+}
+
+#math-keypad {
+    position: relative;
+    z-index: 9999; /* Wymusza wyświetlanie klawiatury na samej górze */
+    pointer-events: auto;
+}
+
+#math-keypad button {
+    pointer-events: auto;
+    user-select: none;
+}
+
+#author-footer {
+    text-align: center;
+    color: #000000;
+    font-size: 14px;
+    padding: 20px 0 25px 0;
+    font-weight: normal;
+}

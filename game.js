@@ -28,8 +28,7 @@ let usedQuestions = [];
 
 const menuItems = [
     "NOWA GRA",
-    "WYBÓR KLASY",
-    "INSTRUKCJA"
+    "WYBÓR KLASY"
 ];
 
 let levelNumber = 1;
@@ -184,19 +183,6 @@ document.addEventListener("keydown", function(e){
 
     keys[e.code] = true;
 
-     // INSTRUKCJA
-
-    if(gameState === "instructions"){
-
-        if(e.code === "Enter"){
-
-            gameState = "menu";
-
-        }
-
-        return;
-
-    }
 
     // ==============================================
     // MENU
@@ -329,7 +315,6 @@ function handleMenuInput(e){
 
     }
 
-
     // Wybór klasy
 
     if(menuOption === 1){
@@ -379,17 +364,6 @@ function handleMenuInput(e){
             loadLevel(1);
 
             gameState = "game";
-
-        }
-
-
-        // Instrukcja
-
-      if(menuOption === 2){
-
-            previousGameState = "menu";
-
-            gameState = "instructions";
 
         }
 
@@ -951,7 +925,7 @@ function drawMenu(){
         ctx.font = "40px serif";
 
         ctx.fillText(
-            i % 2 === 0 ? "🌴" : "🌿",
+            i % 2 === 0 ? "🌴" : "🗿",
             40 + i * 90,
             570
         );
@@ -961,7 +935,7 @@ function drawMenu(){
 
     ctx.fillStyle = "#fefae0";
 
-    ctx.font = "46px Arial";
+    ctx.font = "40px Arial";
 
     ctx.textAlign = "center";
 
@@ -969,7 +943,7 @@ function drawMenu(){
 
 
     ctx.fillText(
-        "🏺 MATEMATYCZNA WYPRAWA 🏺",
+        "🌴 MATEMATYCZNA WYPRAWA 🌴",
         WIDTH / 2,
         90
     );
@@ -985,7 +959,7 @@ function drawMenu(){
 
         if(i === 1){
 
-            text = "KLASA: " + selectedGrade;
+            text = "WYBIERZ KLASĘ: " + selectedGrade;
 
         }
 
@@ -999,11 +973,30 @@ function drawMenu(){
         ctx.fillText(
             (i === menuOption ? "▶ " : "") + text,
             WIDTH / 2,
-            220 + i * 70
+            180 + i * 40
         );
 
     }
 
+    // 2. Rysowanie linii z odpowiednim odstępem (lineHeight)
+    let startY = 310; // Początkowa wysokość Y
+    const lineHeight = 30; // Odstęp między liniami w pikselach
+
+    const textLines = [
+    "Arytmetyka to starożytna nauka,",
+    "jej tajemnice czekają na Ciebie w Zwojach Wiedzy📜.",
+    "Poruszaj się bohaterem🤠 za pomocą strzałek, rozwiązuj zadania.",
+    "Znajdź kotki🐱, które dają Ci dodatkowe życie.",
+    "Zdobądź wszystkie artefakty🏺 w jak najkrótszym czasie⏱️."
+    ];
+
+    ctx.font = "26px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+
+    textLines.forEach((line, index) => {
+    ctx.fillText(line, WIDTH / 2, startY + (index * lineHeight));
+    });
 
     ctx.font = "18px Arial";
 
@@ -3028,9 +3021,6 @@ function setupTouchMenu(){
     const gradeButton =
         document.getElementById("menu-grade");
 
-    const instructionsButton =
-        document.getElementById("menu-instructions");
-
     const gradeDown =
         document.getElementById("grade-down");
 
@@ -3177,60 +3167,6 @@ function setupTouchMenu(){
         }
     );
 
-
-    // ==============================================
-    // INSTRUKCJA
-    // ==============================================
-
-    instructionsButton.addEventListener(
-        "pointerdown",
-        function(e){
-
-            e.preventDefault();
-
-            if(gameState !== "menu"){
-                return;
-            }
-
-
-            alert(
-`🏺 MATEMATYCZNA WYPRAWA
-
-🎮 CEL GRY
-
-Zbierz wszystkie 5 zwojów wiedzy,
-a następnie zdobądź artefakt.
-
-📜 Każdy zwój zawiera
-zadanie matematyczne.
-
-🏺 Artefakt również wymaga
-rozwiązania zadania.
-
-❤️ Jeśli odpowiesz źle,
-tracisz jedno życie.
-
-🐱 Kotek daje +1 życie.
-
-🪨 Na poziomach 2 i 3
-uważaj na spadające kamienie.
-
-🌊 Na poziomie 4
-uważaj na podnoszący się poziom wody.
-
-🎮 STEROWANIE
-
-◀  Ruch w lewo
-▶  Ruch w prawo
-⬆  Skok
-
-Powodzenia, poszukiwaczu!`
-            );
-
-        }
-    );
-
-
     updateTouchGrade();
 
 }
@@ -3238,146 +3174,6 @@ Powodzenia, poszukiwaczu!`
 // ======================================================
 // RYSOWANIE GRY
 // ======================================================
-
-function drawInstructions(){
-
-    ctx.fillStyle = "#31572c";
-
-    ctx.fillRect(
-        0,
-        0,
-        WIDTH,
-        HEIGHT
-    );
-
-
-    ctx.textAlign = "center";
-
-
-    // Tytuł
-
-    ctx.fillStyle = "#ffd60a";
-
-    ctx.font = "42px Arial";
-
-    ctx.fillText(
-        "📜 INSTRUKCJA WYPRAWY 📜",
-        WIDTH / 2,
-        70
-    );
-
-
-    // Instrukcja
-
-    ctx.fillStyle = "white";
-
-    ctx.font = "25px Arial";
-
-    ctx.fillText(
-        "🎯 CEL GRY",
-        WIDTH / 2,
-        135
-    );
-
-
-    ctx.font = "20px Arial";
-
-    ctx.fillText(
-        "Zbierz wszystkie zwoje wiedzy 📜",
-        WIDTH / 2,
-        175
-    );
-
-    ctx.fillText(
-        "i rozwiąż zadania matematyczne.",
-        WIDTH / 2,
-        205
-    );
-
-    ctx.fillText(
-        "Następnie zdobądź starożytny artefakt 🏺.",
-        WIDTH / 2,
-        235
-    );
-
-
-    // Sterowanie
-
-    ctx.fillStyle = "#ffd60a";
-
-    ctx.font = "25px Arial";
-
-    ctx.fillText(
-        "🎮 STEROWANIE",
-        WIDTH / 2,
-        285
-    );
-
-
-    ctx.fillStyle = "white";
-
-    ctx.font = "20px Arial";
-
-    ctx.fillText(
-        "← →   poruszanie się",
-        WIDTH / 2,
-        325
-    );
-
-    ctx.fillText(
-        "↑      skok",
-        WIDTH / 2,
-        355
-    );
-
-    ctx.fillText(
-        "ENTER  zatwierdzenie odpowiedzi",
-        WIDTH / 2,
-        385
-    );
-
-
-    // Zasady
-
-    ctx.fillStyle = "#ffd60a";
-
-    ctx.font = "25px Arial";
-
-    ctx.fillText(
-        "🏺 ZASADY",
-        WIDTH / 2,
-        435
-    );
-
-
-    ctx.fillStyle = "white";
-
-    ctx.font = "18px Arial";
-
-    ctx.fillText(
-        "Każdy zwój wymaga rozwiązania zadania.",
-        WIDTH / 2,
-        465
-    );
-
-    ctx.fillText(
-        "Musisz zebrać wszystkie 5 zwojów, aby zdobyć artefakt.",
-        WIDTH / 2,
-        490
-    );
-
-
-    ctx.fillStyle = "#ffd60a";
-
-    ctx.font = "20px Arial";
-
-    ctx.fillText(
-        "ENTER — powrót do menu",
-        WIDTH / 2,
-        535
-    );
-
-}
 
 function drawGame(){
 
@@ -3430,19 +3226,6 @@ function gameLoop(){
     if(gameState === "menu"){
 
         drawMenu();
-
-        requestAnimationFrame(gameLoop);
-
-        return;
-
-    }
-
-
-    // INSTRUKCJA
-
-    if(gameState === "instructions"){
-
-        drawInstructions();
 
         requestAnimationFrame(gameLoop);
 

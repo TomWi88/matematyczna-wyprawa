@@ -78,7 +78,7 @@ body {
 
 #touch-controls {
 
-    display: flex;
+    display: none;
 
     width: 100%;
 
@@ -158,6 +158,13 @@ body {
 ========================================= */
 
 @media (pointer: coarse) {
+
+    #touch-controls {
+
+        display: flex;
+
+    }
+
 
     #touch-menu {
         display: flex;

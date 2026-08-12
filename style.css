@@ -78,7 +78,7 @@ body {
 
 #touch-controls {
 
-    display: none;
+    display: flex;
 
     width: 100%;
 

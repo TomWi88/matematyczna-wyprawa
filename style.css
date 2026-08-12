@@ -159,10 +159,17 @@ body {
 
 @media (pointer: coarse) {
 
-    #touch-controls {
-
+    #touch-menu {
         display: flex;
+    }
 
+    /*
+       Klasa hidden ma pierwszeństwo
+       przed display:flex z powyższego media query
+    */
+
+    #touch-menu.hidden {
+        display: none !important;
     }
 
 }

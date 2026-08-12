@@ -35,6 +35,13 @@ let levelNumber = 1;
 let score = 0;
 let lives = 3;
 
+// Czy premie końcowe zostały już przyznane?
+let finalBonusesApplied = false;
+
+// Informacje do pokazania na ekranie zwycięstwa
+let livesBonus = 0;
+let timeBonus = 0;
+
 // ======================================================
 // ===== STOPER CAŁEJ GRY =====
 // ======================================================
@@ -78,9 +85,9 @@ let cat = {
 };
 
 // 10 sekund widoczności
-const CAT_DISPLAY_TIME = 60 * 10;
+const CAT_DISPLAY_TIME = 60 * 7;
 // czas do kolejnego pojawienia się
-const CAT_SPAWN_TIME = 60 * 35;
+const CAT_SPAWN_TIME = 60 * 23;
 let catSpawnTimer = CAT_SPAWN_TIME;
 
 // ======================================================
@@ -274,6 +281,9 @@ function restartGame(){
     playerAnswer = "";
     gameMessage = "";
     messageTimer = 0;
+    finalBonusesApplied = false;
+    livesBonus = 0;
+    timeBonus = 0;
     updateHUD();
 }
 
@@ -451,7 +461,6 @@ function nextLevel(){
         return;
     }
 
-    score += 200;
     loadLevel(levelNumber);
     showMessage("🏺 Nowa wyprawa! Poziom " + levelNumber);
 }
@@ -921,12 +930,53 @@ function openQuestion(){
     questionActive = true;
 }
 
+// ======================================================
+// PREMIE ZA UKOŃCZENIE CAŁEJ GRY
+// ======================================================
+
+function applyFinalBonuses(){
+
+    // Zabezpieczenie przed wielokrotnym naliczeniem
+    if(finalBonusesApplied){
+        return;
+    }
+    finalBonusesApplied = true;
+
+
+    // ==============================================
+    // PREMIA ZA ZACHOWANE ŻYCIA
+    // ==============================================
+
+    livesBonus = lives * 10;
+    score += livesBonus;
+
+    // ==============================================
+    // PREMIA ZA CZAS
+    // ==============================================
+
+    const finalTime = getGameTime();
+    if(finalTime < 4 * 60){
+        timeBonus = 200;
+    }
+    else if(finalTime < 5 * 60){
+        timeBonus = 100;
+    }
+    else if(finalTime < 6 * 60){
+        timeBonus = 50;
+    }
+    else{
+        timeBonus = 0;
+    }
+    score += timeBonus;
+    updateHUD();
+}
+
 function checkAnswer(){
     const answer = Number(playerAnswer);
 
     if(answer === currentAnswer){
         if(questionReward === "scroll"){
-            score += 10;
+            score += 20;
             scrollsCollected++;
             if(activeScroll) activeScroll.taken = true;
             activeScroll = null;
@@ -937,10 +987,11 @@ function checkAnswer(){
             questionActive = false;
             updateHUD();
 
-            if(levelNumber === 4){
-                stopGameTimer();
-                gameState = "win";
-                return;
+        if(levelNumber === 4){
+            stopGameTimer();
+            applyFinalBonuses();
+            gameState = "win";
+            return;
             }
             nextLevel();
             return;
@@ -960,7 +1011,6 @@ function checkAnswer(){
     }
     updateHUD();
 }
-
 
 // ======================================================
 // HUD & PRZESZKODY
@@ -1083,29 +1133,110 @@ function checkWaterCollision(){
     }
 }
 
-
 // ======================================================
 // EKRANY WYGRANEJ I PRZEGRANEJ
 // ======================================================
 
 function drawWinScreen(){
     ctx.fillStyle = "#00633a";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    ctx.fillRect(
+        0,
+        0,
+        WIDTH,
+        HEIGHT
+    );
 
     ctx.textAlign = "center";
     ctx.fillStyle = "#b69c1a";
     ctx.font = "52px Arial";
-    ctx.fillText("🏆 ZWYCIĘSTWO! 🏆", WIDTH / 2, 150);
+    ctx.fillText(
+        "🏆 ZWYCIĘSTWO! 🏆",
+        WIDTH / 2,
+        90
+    );
 
+    ctx.fillStyle = "white";
     ctx.font = "28px Arial";
-    ctx.fillText("Ukończyłeś wszystkie 4 poziomy!", WIDTH / 2, 320);
-    ctx.fillText("Wynik: " + score, WIDTH / 2, 370);
+    ctx.fillText(
+        "Ukończyłeś wszystkie 4 poziomy!",
+        WIDTH / 2,
+        145
+    );
 
     ctx.font = "30px Arial";
-    ctx.fillText("⏱️ Czas wyprawy: " + formatGameTime(getGameTime()), WIDTH / 2, 420);
+    ctx.fillText(
+        "⏱️ Czas wyprawy: " +
+        formatGameTime(getGameTime()),
+        WIDTH / 2,
+        200
+    );
+
+    ctx.font = "25px Arial";
+    ctx.fillText(
+        "❤️ Zachowane życia: " +
+        lives +
+        " × 10 = +" +
+        livesBonus +
+        " pkt",
+        WIDTH / 2,
+        250
+    );
+
+    ctx.fillText(
+        "⏱️ Premia czasowa: +" +
+        timeBonus +
+        " pkt",
+        WIDTH / 2,
+        290
+    );
+
+    ctx.fillStyle = "#ffd60a";
+    ctx.font = "38px Arial";
+    ctx.fillText(
+        "⭐ WYNIK KOŃCOWY: " +
+        score +
+        " pkt",
+        WIDTH / 2,
+        360
+    );
+
+    ctx.fillStyle = "white";
+    ctx.font = "22px Arial";
+    if(timeBonus === 150){
+        ctx.fillText(
+            "🔥 Niesamowity czas! Poniżej 4 minut!",
+            WIDTH / 2,
+            415
+        );
+    }
+    else if(timeBonus === 100){
+        ctx.fillText(
+            "⚡ Świetny czas! Poniżej 5 minut!",
+            WIDTH / 2,
+            415
+        );
+    }
+    else if(timeBonus === 50){
+        ctx.fillText(
+            "🏃 Świetnie! Ukończono poniżej 6 minut!",
+            WIDTH / 2,
+            415
+        );
+    }
+    else{
+        ctx.fillText(
+            "👏 Gratulacje za ukończenie wyprawy!",
+            WIDTH / 2,
+            415
+        );
+    }
 
     ctx.font = "20px Arial";
-    ctx.fillText("Naciśnij ENTER lub dotknij ekranu, aby grać ponownie.", WIDTH / 2, 500);
+    ctx.fillText(
+        "Naciśnij ENTER lub dotknij ekranu, aby zagrać ponownie.",
+        WIDTH / 2,
+        500
+    );
 }
 
 function drawGameOverScreen(){
@@ -1258,19 +1389,22 @@ function setupTouchMenu(){
         gradeText.textContent = "Klasa: " + selectedGrade;
     }
 
-    newGameButton.addEventListener("pointerdown", function(e){
-        e.preventDefault();
-        if(gameState !== "menu") return;
+   newGameButton.addEventListener("pointerdown", function(e){
 
-        score = 0;
-        lives = 3;
-        levelNumber = 1;
-        usedQuestions = [];
+    e.preventDefault();
 
-        startGameTimer();
-        gameState = "game"; // Zmiana stanu następuje przed ładowaniem poziomu
-        loadLevel(1);
-        updateHUD();
+    if(gameState !== "menu"){
+        return;
+    }
+
+    restartGame();
+    usedQuestions = [];
+    levelNumber = 1;
+    startGameTimer();
+    gameState = "game";
+    updateTouchMenuVisibility();
+    loadLevel(1);
+    updateHUD();
     });
 
     gradeButton.addEventListener("pointerdown", function(e){
@@ -1301,6 +1435,31 @@ function setupTouchMenu(){
     updateTouchGrade();
 }
 
+// ======================================================
+// WIDOCZNOŚĆ DOTYKOWEGO MENU
+// ======================================================
+
+function updateTouchMenuVisibility(){
+
+    const touchMenu =
+        document.getElementById("touch-menu");
+
+    if(!touchMenu){
+        return;
+    }
+
+
+    if(gameState === "menu"){
+
+        touchMenu.classList.remove("hidden");
+
+    }else{
+
+        touchMenu.classList.add("hidden");
+
+    }
+
+}
 
 // ======================================================
 // PĘTLA GRY
@@ -1324,6 +1483,7 @@ function drawGame(){
 function gameLoop(){
     animationTime += 0.05;
     playerAnimation += 0.1;
+    updateTouchMenuVisibility();
 
     if(gameState === "menu"){
         drawMenu();
